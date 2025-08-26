@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8 flex flex-col items-center min-h-screen">
+    <div class="w-full max-w-4xl bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">
+            Student Performance Tracker 🎓
+        </h1>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <!-- Add Student Section -->
+            <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                <h2 class="text-xl font-semibold text-blue-800 mb-4">Add Student</h2>
+                <form action="{{ url_for('add_student') }}" method="post" class="space-y-4">
+                    <div>
+                        <label for="name" class="block text-blue-700">Name</label>
+                        <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2">
+                    </div>
+                    <div>
+                        <label for="roll_number" class="block text-blue-700">Roll Number</label>
+                        <input type="number" id="roll_number" name="roll_number" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2">
+                    </div>
+                    <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 transition duration-300">
+                        Add Student
+                    </button>
+                </form>
+            </div>
+
+            <!-- Add Grades Section -->
+            <div class="bg-green-50 p-6 rounded-xl border border-green-200">
+                <h2 class="text-xl font-semibold text-green-800 mb-4">Add Grades</h2>
+                <form action="{{ url_for('add_grades') }}" method="post" class="space-y-4">
+                    <div>
+                        <label for="grades_roll_number" class="block text-green-700">Student Roll Number</label>
+                        <input type="number" id="grades_roll_number" name="roll_number" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2">
+                    </div>
+                    <div>
+                        <label for="subject1" class="block text-green-700">Subject & Grade</label>
+                        <div class="flex space-x-2 mt-1">
+                            <input type="text" name="subject" placeholder="e.g., Math" required class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2">
+                            <input type="number" name="grade" placeholder="0-100" required class="w-1/2 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2">
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500">You can add multiple subjects by submitting this form multiple times for the same student.</p>
+                    <button type="submit" class="w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 transition duration-300">
+                        Add Grades
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Student Details Section -->
+        <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200 mb-8">
+            <h2 class="text-xl font-semibold text-yellow-800 mb-4">View Student Details</h2>
+            <form action="{{ url_for('view_details') }}" method="post" class="space-y-4">
+                <div>
+                    <label for="view_roll_number" class="block text-yellow-700">Student Roll Number</label>
+                    <input type="number" id="view_roll_number" name="roll_number" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 p-2">
+                </div>
+                <button type="submit" class="w-full py-2 px-4 bg-yellow-600 text-white font-semibold rounded-md shadow-md hover:bg-yellow-700 transition duration-300">
+                        View Details
+                    </button>
+                </form>
+            </div>
+
+            <!-- Student List & Bonus Features Section -->
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Current Students</h2>
+                <ul class="space-y-2 mb-4">
+                    {% for student in students %}
+                        <li class="p-4 bg-white rounded-lg shadow-sm flex justify-between items-center border border-gray-100">
+                            <span class="text-gray-700">{{ student.roll_number }} - {{ student.name }}</span>
+                            <span class="text-sm font-medium text-gray-500">
+                                Average: {{ student_averages[student.roll_number] }}
+                            </span>
+                        </li>
+                    {% else %}
+                        <li class="text-gray-500 text-center">No students added yet.</li>
+                    {% endfor %}
+                </ul>
+                
+                <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-2">Bonus Features</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <!-- Subject-Wise Topper -->
+                    <form action="{{ url_for('subject_topper') }}" method="post" class="space-y-2">
+                        <label for="topper_subject" class="block text-gray-700">Subject-Wise Topper</label>
+                        <select id="topper_subject" name="subject" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2">
+                            {% for subject in subjects %}
+                                <option value="{{ subject }}">{{ subject }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="w-full py-2 px-4 bg-purple-600 text-white font-semibold rounded-md shadow-md hover:bg-purple-700 transition duration-300">
+                            Find Topper
+                        </button>
+                    </form>
+                    <!-- Class Average -->
+                    <form action="{{ url_for('class_average') }}" method="post" class="space-y-2">
+                        <label for="class_avg_subject" class="block text-gray-700">Class Average</label>
+                        <select id="class_avg_subject" name="subject" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2">
+                            {% for subject in subjects %}
+                                <option value="{{ subject }}">{{ subject }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="w-full py-2 px-4 bg-pink-600 text-white font-semibold rounded-md shadow-md hover:bg-pink-700 transition duration-300">
+                            Calculate Average
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
